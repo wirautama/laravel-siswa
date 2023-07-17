@@ -1,21 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<style>
-    .main {
-        display: flex;
-        justify-content: center;
-    }
-</style>
-<body>
-    <div class="main">
-        Email Verifikasi sudah dikirim ke email anda. Silahkan verifikasi dengan cara klik link yang ada di dalamnya
+@extends('auth.layout')
+@section('content')
+@section('title', 'Verifikasi Email')
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <p></p>
+            <br>
+            <p>
+        </div>
     </div>
-    
-</body>
-</html>
+</div>
+
+<div class="login-box">
+    <div class="login-logo">
+      <a href=""><b>Laravel</b> Siswa</a>
+    </div>
+    <!-- /.login-logo -->
+    <div class="login-box-body">
+      <p class="login-box-msg">Email Verifikasi sudah dikirim di email anda. <a href="https://mailtrap.io/inboxes/2124319/messages/3592587227">Klik link ini untuk verifikasi cepat</a></p>
+  
+      
+         
+  
+        <p class="login-box-msg">Belum Mendapatkan email verifikasi?</p> 
+        <div class="row">
+          <div class="col-xs-12">
+              <div class="checkbox icheck">
+              
+                <form action="{{route('verification.send')}}" method="POST">
+                    @csrf
+                    
+                    <button type="submit" class="btn btn-primary btn-block btn-flat">Kirim Verifikasi Ulang</button>
+            </div>
+        </div>
+          <!-- /.col -->
+          
+        </form>
+          <!-- /.col -->
+        </div>
+  
+  
+      
+      <!-- /.social-auth-links -->
+  
+  
+    </div>
+    <!-- /.login-box-body -->
+  </div>
+
+@endsection

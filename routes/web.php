@@ -8,6 +8,8 @@ use App\Http\Controllers\MapelController;
 use App\Http\Controllers\MapelsiswaController;
 use App\Http\Controllers\SiswaController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,19 +33,27 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/register', [LoginController::class, 'register'])->name('register');
 Route::post('/register-proses', [LoginController::class, 'register_proses'])->name('register-proses');
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
+
+Route::get('/email/need-verification', function () {
+    return view('auth.verify-email')->withToastSuccess('Silahkan Verifikasi Email Anda!');
 })->middleware('auth')->name('verification.notice');
+
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
 
-    return redirect('/dashboard');
+    return redirect()->route('dashboard')->withToastSuccess('Selamat Datang ' . Auth::user()->name);
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
 
-Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'verified'], 'as' => 'admin'], function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+Route::post('/email/resend-verification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->withToastSuccess('Silahkan Verifikasi Kembali Email Anda');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+
+Route::group(['prefix' => 'admin', 'middleware' => 'auth', 'verified'], function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/siswa', [SiswaController::class, 'index'])->name('admin.siswa');
     Route::get('/siswa/create', [SiswaController::class, 'create'])->name('siswa.create');

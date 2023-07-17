@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
             'name' => 'Aditya Wira Utama',
             'level' => 'Admin',
             'email' => 'wiraaditya0@gmail.com',
+            'email_verified_at' => now(),
             'password' => password_hash('akugakero', PASSWORD_DEFAULT),
             'avatar' => 'default.png',
             'created_at' => now(),

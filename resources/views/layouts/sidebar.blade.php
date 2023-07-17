@@ -1,7 +1,7 @@
 <ul class="sidebar-menu" data-widget="tree">
     <li class="header">MAIN NAVIGATION</li>
     <li class="{{Request::is('admin/dashboard*') ? 'active' : ''}}">
-        <a href="/admin/dashboard"><i class="fa fa-home"></i><span>Dashboard</span></a>
+        <a href="{{route('dashboard')}}"><i class="fa fa-home"></i><span>Dashboard</span></a>
     </li>
   
 

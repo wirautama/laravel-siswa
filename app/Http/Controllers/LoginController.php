@@ -32,7 +32,7 @@ class LoginController extends Controller
             request()->session()->regenerateToken();
             alert()->success('Login Berhasil', 'Selamat Datang');
 
-            return redirect('/admin/dashboard')->withSuccess('Kamu telah berhasil masuk');
+            return redirect()->route('dashboard')->withSuccess('Kamu telah berhasil masuk');
         } else {
             alert()->error('Login Gagal', 'Maaf username atau password anda tidak terdaftar di database kami.');
             return back()->with('error', 'Gagal Login')->onlyInput('email');
@@ -82,8 +82,8 @@ class LoginController extends Controller
         event(new Registered($user));
         Auth::login($user);
 
-        alert()->success('Register Berhasil', 'Silahkan verifikasi email anda untuk melanjutkan');
-        return redirect('/email/verify');
+        // alert()->success('Register Berhasil', 'Silahkan verifikasi email anda untuk melanjutkan');
+        return redirect()->route('verification.notice')->withToastSuccess('Silahkan Verifikasi Email Anda!');
 
         // User::create($data);
         // return redirect('login')->with('success', 'Registrasi Berhasil! Silahkan Login');
