@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -82,10 +85,42 @@ class LoginController extends Controller
         event(new Registered($user));
         Auth::login($user);
 
-        // alert()->success('Register Berhasil', 'Silahkan verifikasi email anda untuk melanjutkan');
-        return redirect()->route('verification.notice')->withToastSuccess('Silahkan Verifikasi Email Anda!');
 
-        // User::create($data);
-        // return redirect('login')->with('success', 'Registrasi Berhasil! Silahkan Login');
+        return redirect()->route('verification.notice')->withToastSuccess('Silahkan Verifikasi Email Anda!');
+    }
+
+    public function forgotPassword()
+    {
+        return view('auth.forgot-password');
+    }
+
+    public function resetPassword(string $token)
+    {
+        return view('auth.reset-password', ['token' => $token]);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => password_hash($password, PASSWORD_DEFAULT)
+                ])->setRememberToken(Str::random(60));
+
+                $user->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+        return $status === Password::PASSWORD_RESET
+            ? redirect()->route('login')->withToastSuccess(__($status))
+            : back()->withErrors(['email' => [__($status)]]);
     }
 }

@@ -61,7 +61,7 @@
       
       <!-- /.social-auth-links -->
   
-      <a href="#">Saya lupa kata sandi saya</a><br>
+      <a href="{{route('forgot-password')}}">Saya lupa kata sandi saya</a><br>
       <a href="{{route('register')}}" class="text-center">Daftar akun baru</a>
   
     </div>

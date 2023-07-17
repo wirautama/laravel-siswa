@@ -10,6 +10,7 @@ use App\Http\Controllers\SiswaController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,6 +51,23 @@ Route::post('/email/resend-verification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return back()->withToastSuccess('Silahkan Verifikasi Kembali Email Anda');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+
+Route::get('/forgot-password', [LoginController::class, 'forgotPassword'])->middleware('guest')->name('forgot-password');
+Route::post('/forgot-password', function (Request $request) {
+    $request->validate(['email' => 'required|email']);
+
+    $status = Password::sendResetLink(
+        $request->only('email')
+    );
+
+    return $status === Password::RESET_LINK_SENT
+        ? back()->with(['status' => __($status)])
+        : back()->withErrors(['email' => __($status)]);
+})->middleware('guest')->name('password.email');
+
+Route::get('/reset-password/{token}', [LoginController::class, 'resetPassword'])->middleware('guest')->name('password.reset');
+Route::post('/reset-password', [LoginController::class, 'updatePassword'])->middleware('guest')->name('password.update');
 
 
 Route::group(['prefix' => 'admin', 'middleware' => 'auth', 'verified'], function () {
