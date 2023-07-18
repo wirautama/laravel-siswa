@@ -22,10 +22,7 @@
             </div>
             @enderror
           <br>
-        {{-- <div class="form-group has-feedback">
-          <input type="password" class="form-control" name="password" placeholder="Kata Sandi">
-          <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-        </div> --}}
+      
   
           {{-- <label for="password">@error('password')<i class="fa fa-times-circle-o"></i> @enderror Kata Sandi</label> --}}
           <div class="input-group @error('password') has-error @enderror">
@@ -65,10 +62,12 @@
   
       <div class="social-auth-links text-center">
         <p>- ATAU -</p>
-        <a href="/auth/github/redirect" class="btn btn-block btn-social btn-github btn-flat"><i class="fa fa-github"></i> Login dengan akun
+        <a href="{{route('githubLogin')}}" class="btn btn-block btn-social btn-github btn-flat"><i class="fa fa-github"></i> Login dengan akun
           Github</a>
+        <a href="{{route('googleLogin')}}" class="btn btn-block btn-social btn-google btn-flat"><i class="fa fa-google"></i> Login dengan akun
+          Google</a>
       </div>
-      <a href="{{route('forgot-password')}}">Saya lupa kata sandi saya</a><br>
+      <a href="{{route('forgot-password')}}">Lupa kata sandi</a><br>
       <a href="{{route('register')}}" class="text-center">Daftar akun baru</a>
     </div>
     <!-- /.login-box-body -->

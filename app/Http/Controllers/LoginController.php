@@ -66,6 +66,43 @@ class LoginController extends Controller
         Auth::login($user);
         return redirect()->route('dashboard');
     }
+
+    public function googleLogin()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function googleLoginProses()
+    {
+        $googleUser = Socialite::driver('google')->user();
+
+        $user = User::updateOrCreate(
+            [
+                'google_id' => $googleUser->id,
+                'name' => $googleUser->name,
+                'email' => $googleUser->email,
+                'password' => password_hash($googleUser->name, PASSWORD_DEFAULT),
+                'avatar' => $googleUser->avatar,
+            ]
+        );
+
+        Auth::login($user);
+        return redirect()->route('dashboard');
+
+
+
+        // if ($findUser) {
+        //     Auth::login($findUser);
+        //     return redirect()->route('dashboard');
+        // } else {
+        //     $newUser = User::create([
+        //         'name' => $googleUser->getName(),
+        //         'email' => $googleUser->getEmail(),
+        //         'google_id' => $googleUser->getId(),
+        //         'password' => 
+        //     ]);
+        // }
+    }
     // END LOGIN
 
 

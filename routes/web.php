@@ -32,6 +32,9 @@ Route::post('/login-proses', [LoginController::class, 'login_proses'])->name('lo
 
 Route::get('/auth/github/redirect', [LoginController::class, 'githubLogin'])->name('githubLogin');
 Route::get('/auth/github/callback', [LoginController::class, 'githubLoginProses'])->name('githubLoginProses');
+
+Route::get('/auth/google/redirect', [LoginController::class, 'googleLogin'])->name('googleLogin');
+Route::get('/auth/google/callback', [LoginController::class, 'googleLoginProses'])->name('googleLoginProses');
 // END LOGIN
 
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
