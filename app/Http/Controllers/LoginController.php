@@ -5,15 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
 {
+    // LOGIN
     public function index()
     {
         return view('auth.login');
@@ -42,6 +45,32 @@ class LoginController extends Controller
         }
     }
 
+    public function githubLogin()
+    {
+        return Socialite::driver('github')->redirect();
+    }
+
+    public function githubLoginProses()
+    {
+        $githubUser = Socialite::driver('github')->user();
+        $user = User::updateOrCreate([
+            'github_id' => $githubUser->id,
+        ], [
+            'name' => $githubUser->name,
+            'email' => $githubUser->email,
+            'password' => password_hash($githubUser->nickname, PASSWORD_DEFAULT),
+            'github_token' => $githubUser->token,
+            'github_refresh_token' => $githubUser->refreshToken,
+        ]);
+
+        Auth::login($user);
+        return redirect()->route('dashboard');
+    }
+    // END LOGIN
+
+
+
+    // LOGOUT
     public function logout()
     {
         Auth::logout();
@@ -52,6 +81,11 @@ class LoginController extends Controller
         return redirect()->route('login');
     }
 
+    // END LOGOUT
+
+
+
+    // REGISTER
     public function register()
     {
         return view('auth.register');
@@ -89,9 +123,43 @@ class LoginController extends Controller
         return redirect()->route('verification.notice')->withToastSuccess('Silahkan Verifikasi Email Anda!');
     }
 
+    public function verifIndex()
+    {
+        return view('auth.verify-email')->withToastSuccess('Silahkan Verifikasi Email Anda!');
+    }
+
+    public function verifProses(EmailVerificationRequest $request)
+    {
+        $request->fulfill();
+        return redirect()->route('dashboard')->withToastSuccess('Selamat Datang ' . Auth::user()->name);
+    }
+
+    // public function resendVerif(Request $request)
+    // {
+    //     $request->user()->sendEmailVerificationNotification();
+    //     return back()->withToastSuccess('Silahkan Verifikasi Kembali Email Anda');
+    // }
+    // END REGISTER
+
+
+    // FORGOT PASSWORD
+
     public function forgotPassword()
     {
         return view('auth.forgot-password');
+    }
+
+    public function forgotProses(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        return $status === Password::RESET_LINK_SENT
+            ? back()->withToastSuccess('Silahkan Verifikasi Email Anda')
+            : back()->withErrors(['email' => __($status)]);
     }
 
     public function resetPassword(string $token)
@@ -123,4 +191,8 @@ class LoginController extends Controller
             ? redirect()->route('login')->withToastSuccess(__($status))
             : back()->withErrors(['email' => [__($status)]]);
     }
+
+    // END FORGOT PASSWORD
+
+
 }

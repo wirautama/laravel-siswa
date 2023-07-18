@@ -61,9 +61,15 @@
       
       <!-- /.social-auth-links -->
   
+     
+  
+      <div class="social-auth-links text-center">
+        <p>- ATAU -</p>
+        <a href="/auth/github/redirect" class="btn btn-block btn-social btn-github btn-flat"><i class="fa fa-github"></i> Login dengan akun
+          Github</a>
+      </div>
       <a href="{{route('forgot-password')}}">Saya lupa kata sandi saya</a><br>
       <a href="{{route('register')}}" class="text-center">Daftar akun baru</a>
-  
     </div>
     <!-- /.login-box-body -->
   </div>
