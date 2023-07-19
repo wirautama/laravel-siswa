@@ -30,11 +30,19 @@ Route::get('/', function () {
 Route::get('/login', [LoginController::class, 'index'])->name('login');
 Route::post('/login-proses', [LoginController::class, 'login_proses'])->name('login-proses');
 
-Route::get('/auth/github/redirect', [LoginController::class, 'githubLogin'])->name('githubLogin');
-Route::get('/auth/github/callback', [LoginController::class, 'githubLoginProses'])->name('githubLoginProses');
+// LOGIN GITHUB
+Route::controller(LoginController::class)->group(function () {
+    Route::get('/auth/github/redirect', 'githubLogin')->name('githubLogin');
+    Route::get('/auth/github/callback', 'githubLoginProses')->name('githubLoginProses');
+});
+// END LOGIN GITHUB
 
-Route::get('/auth/google/redirect', [LoginController::class, 'googleLogin'])->name('googleLogin');
-Route::get('/auth/google/callback', [LoginController::class, 'googleLoginProses'])->name('googleLoginProses');
+// LOGIN GOOGLE
+Route::controller(LoginController::class)->group(function () {
+    Route::get('/auth/google/redirect', 'googleLogin')->name('googleLogin');
+    Route::get('/auth/google/callback', 'googleLoginProses')->name('googleLoginProses');
+});
+// END LOGIN GOOGLE
 // END LOGIN
 
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -44,7 +52,7 @@ Route::get('/register', [LoginController::class, 'register'])->name('register');
 Route::post('/register-proses', [LoginController::class, 'register_proses'])->name('register-proses');
 Route::get('/email/need-verification', [LoginController::class, 'verifIndex'])->middleware('auth')->name('verification.notice');
 Route::get('/email/verify/{id}/{hash}', [LoginController::class, 'verifProses'])->middleware(['auth', 'signed'])->name('verification.verify');
-// Route::post('/email/resend-verification', [LoginController::class, 'resendVerif'])->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+Route::post('/email/resend-verification', [LoginController::class, 'resendVerif'])->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 // END REGISTER
 
 // FORGOT PASSWORD

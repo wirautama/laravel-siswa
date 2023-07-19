@@ -32,15 +32,21 @@ return [
     ],
 
     'github' => [
-        'client_id' => '635f48c7d113a5d780b8',
-        'client_secret' => '9572e02d4a2934cd1385103d95d147b50404d99e',
+        'client_id' => env('GITHUB_CLIENT_ID'),
+        'client_secret' => env('GITHUB_CLIENT_SECRET'),
         'redirect' => 'http://127.0.0.1:8000/auth/github/callback',
     ],
 
     'google' => [
-        'client_id' => '807930534033-u20fv4sadscngelgc23lfrod4hm3oh5k.apps.googleusercontent.com',
-        'client_secret' => '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',
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => 'http://127.0.0.1:8000/auth/google/callback/',
-    ]
+    ],
+
+    'facebook' => [
+        'client_id' => env('FACEBOOK_CLIENT_ID'),
+        'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
+        'redirect' => 'http://localhost:8000/auth/facebook/callback/',
+    ],
 
 ];

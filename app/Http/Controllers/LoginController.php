@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Exception;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use PhpParser\Node\Stmt\Catch_;
 
 class LoginController extends Controller
 {
@@ -52,19 +54,31 @@ class LoginController extends Controller
 
     public function githubLoginProses()
     {
-        $githubUser = Socialite::driver('github')->user();
-        $user = User::updateOrCreate([
-            'github_id' => $githubUser->id,
-        ], [
-            'name' => $githubUser->name,
-            'email' => $githubUser->email,
-            'password' => password_hash($githubUser->nickname, PASSWORD_DEFAULT),
-            'github_token' => $githubUser->token,
-            'github_refresh_token' => $githubUser->refreshToken,
-        ]);
+        try {
+            $githubUser = Socialite::driver('github')->user();
+            $findUser = User::where('github_id', $githubUser->id)->first();
 
-        Auth::login($user);
-        return redirect()->route('dashboard');
+            if ($findUser) {
+                Auth::login($findUser);
+                return redirect()->route('dashboard');
+            } else {
+                $newUser = User::updateOrCreate([
+                    'github_id' => $githubUser->id,
+                ], [
+                    'name' => $githubUser->name,
+                    'email' => $githubUser->email,
+                    'password' => password_hash('akugakero', PASSWORD_DEFAULT),
+                    'github_token' => $githubUser->token,
+                    'github_refresh_token' => $githubUser->refreshToken,
+                    'avatar' => $githubUser->avatar
+                ]);
+
+                Auth::login($newUser);
+                return redirect()->route('dashboard');
+            }
+        } catch (Exception $e) {
+            $e->getMessage();
+        }
     }
 
     public function googleLogin()
@@ -74,35 +88,33 @@ class LoginController extends Controller
 
     public function googleLoginProses()
     {
-        $googleUser = Socialite::driver('google')->user();
+        try {
+            $googleUser = Socialite::driver('google')->user();
+            $findUser = User::where('google_id', $googleUser->id)->first();
 
-        $user = User::updateOrCreate(
-            [
-                'google_id' => $googleUser->id,
-                'name' => $googleUser->name,
-                'email' => $googleUser->email,
-                'password' => password_hash($googleUser->name, PASSWORD_DEFAULT),
-                'avatar' => $googleUser->avatar,
-            ]
-        );
+            if ($findUser) {
+                Auth::login($findUser);
+                return redirect()->route('dashboard');
+            } else {
+                $newUser = User::updateOrCreate(
+                    [
+                        'google_id' => $googleUser->id,
+                        'name' => $googleUser->name,
+                        'email' => $googleUser->email,
+                        'password' => password_hash('akugakero', PASSWORD_DEFAULT),
+                        'avatar' => $googleUser->avatar,
+                    ]
+                );
 
-        Auth::login($user);
-        return redirect()->route('dashboard');
-
-
-
-        // if ($findUser) {
-        //     Auth::login($findUser);
-        //     return redirect()->route('dashboard');
-        // } else {
-        //     $newUser = User::create([
-        //         'name' => $googleUser->getName(),
-        //         'email' => $googleUser->getEmail(),
-        //         'google_id' => $googleUser->getId(),
-        //         'password' => 
-        //     ]);
-        // }
+                Auth::login($newUser);
+                return redirect()->route('dashboard');
+            }
+        } catch (Exception $e) {
+            $e->getMessage();
+        }
     }
+
+
     // END LOGIN
 
 
@@ -171,11 +183,7 @@ class LoginController extends Controller
         return redirect()->route('dashboard')->withToastSuccess('Selamat Datang ' . Auth::user()->name);
     }
 
-    // public function resendVerif(Request $request)
-    // {
-    //     $request->user()->sendEmailVerificationNotification();
-    //     return back()->withToastSuccess('Silahkan Verifikasi Kembali Email Anda');
-    // }
+
     // END REGISTER
 
 
